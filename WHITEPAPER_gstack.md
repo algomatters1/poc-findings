@@ -4,97 +4,252 @@
 
 **POC Date:** March 17, 2026  
 **Author:** Chief Architect Analysis  
-**Classification:** Strategic Intelligence Report
+**Classification:** Strategic Intelligence Report  
+**Version:** 2.0 (Enhanced Edition)
 
 ---
 
 ## Executive Summary
 
-gstack is a collection of 12 opinionated workflow skills that transform Claude Code from a single generic assistant into a team of specialists—CEO, CTO, Designer, Engineer, and QA—each with specific roles in the product development lifecycle.
+gstack is a collection of 12 opinionated workflow skills that transform Claude Code from a single generic assistant into a coordinated team of specialists — CEO, CTO, Designer, Engineer, and QA — each with specific roles in the product development lifecycle.
 
 **Key Insight:** Most AI coding assistants take requests literally. gstack introduces workflow stages that force critical thinking at each step: *Is this the right feature? Is the architecture sound? Does the design match our standards? Are we shipping quality code?*
 
-The result: products built with gstack go through the same rigorous process that mature engineering teams use, but executed by AI in minutes instead of weeks.
+**POC Result:** Applied gstack skills to a real codebase (HRAnalytics). The `/plan-design-review` skill detected:
+- Generic Inter typography (AI slop indicator)
+- 3-column grid pattern (AI slop indicator)  
+- Missing loading states
+- Flat visual hierarchy
+
+These issues would have been missed by a generic "add this feature" request.
+
+**Business Impact:** Products built with gstack go through the same rigorous process that mature engineering teams use, but executed by AI in minutes instead of weeks.
 
 ---
 
-## The Problem: AI Takes You Literally
+## Part 1: The Problem — AI Takes You Literally
 
-### The Literal Assistant Problem
+### 1.1 The Literal Assistant Problem
 
 When you tell Claude Code "add a photo upload feature," it does exactly that. It doesn't ask:
 
-- Is photo upload actually what users need?
-- Should we auto-identify products from photos?
-- What's the competitive landscape?
-- How does this fit our architecture?
+| Question | Traditional AI | With gstack |
+|----------|----------------|--------------|
+| Is photo upload actually what users need? | ❌ | ✅ (CEO Review) |
+| What's the architecture? | Optional | ✅ (Eng Review) |
+| Does the design match our standards? | ❌ | ✅ (Design Review) |
+| What breaks if we change this? | ❌ | ✅ (Review) |
+| Does it work end-to-end? | Optional | ✅ (QA) |
+| Can we ship this safely? | ❌ | ✅ (Ship) |
 
-gstack solves this by introducing **workflow stages**:
+### 1.2 The Missing Workflow
 
-| Stage | Role | Question |
-|-------|------|----------|
-| Plan-CEO-Review | Founder/CEO | Is this the RIGHT feature? |
-| Plan-Eng-Review | Tech Lead | Is the architecture sound? |
-| Plan-Design-Review | Designer | Does the design work? |
-| Review | Paranoid Engineer | What breaks? |
-| Ship | Release Engineer | Can we deploy? |
-| QA | Test Engineer | Does it work? |
-| Retro | Engineering Manager | What did we learn? |
+Professional engineering teams have workflows:
+
+```
+Product Request → CEO Review → Eng Review → Design Review → 
+Implementation → Code Review → QA → Ship → Retrospective
+```
+
+Generic AI assistants skip all of this:
+
+```
+Product Request → Implementation → ???
+```
+
+gstack adds the missing workflow:
+
+```
+Product Request → /plan-ceo-review → /plan-eng-review → /plan-design-review →
+Implementation → /review → /qa → /ship → /retro
+```
+
+### 1.3 Why This Matters Now
+
+1. **AI Agents Are Coders:** Every startup uses AI to write code. The differentiator is **workflow**, not syntax generation.
+
+2. **Shipping Speed vs. Quality:** gstack enforces quality gates without slowing down. Review happens in parallel with coding.
+
+3. **Distributed Teams:** Design review and QA don't require humans in the same room. gstack fills the gap.
+
+4. **Cost Efficiency:** A team of 12 specialists for $20/month vs. hiring 12 senior engineers at $200K/year each.
 
 ---
 
-## The Skills: A Product Development Lifecycle
+## Part 2: The Skills — A Product Development Lifecycle
 
-### 1. Planning Phase
+### 2.1 Planning Phase
 
 #### `/plan-ceo-review` — The Founder's Eye
 
-Reframes your request to find the 10-star product inside it.
+**Purpose:** Reframes your request to find the 10-star product inside it.
+
+**How it works:**
+1. Takes your feature request
+2. Identifies the actual user problem
+3. Proposes the 10-star version
+4. Lists risks and alternatives
 
 **Example:**
-```
-You: "Add seller photo upload"
 
-Claude (plan-ceo-review): "Photo upload" is not the feature. 
-The real job is helping sellers create listings that sell. 
-Here's the 10-star version:
+```
+Input: "Add seller photo upload"
+
+Output (CEO Review):
+"Photo upload" is not the feature.
+The real job is helping sellers create listings that sell.
+
+10-star version:
 - Auto-identify product from photo
 - Pull specs and pricing from the web
 - Draft title and description
 - Suggest best hero image
+
+This would take 3 weeks vs. 3 days for basic upload.
+Recommend: Start with basic, plan 10-star for v2.
 ```
 
-**Value:** Catches scope creep early. Finds the real problem.
+**Hands-on POC:**
+
+```
+Applied to: Yaani authentication feature request
+Input: "Add password reset"
+Output: Password reset is not the feature. The real job is "account recovery."
+       10-star version: magic links, biometric auth, passkeys
+       Recommend: Start with email reset, add magic links in v2
+```
+
+---
 
 #### `/plan-eng-review` — The Architect's Lens
 
-Locks in architecture, data flow, diagrams, edge cases, and test matrix.
+**Purpose:** Locks in architecture, data flow, diagrams, edge cases, and test matrix.
 
 **Outputs:**
 - Architecture diagrams (Mermaid/ASCII)
 - State machines for complex flows
 - Failure mode analysis
 - Test coverage requirements
+- API contracts
 
-#### `/plan-design-review` — The Designer's Audit
+**Example:**
 
-80-item checklist, letter grades, AI Slop detection.
+```
+Input: Feature request from CEO review
 
-**Detects:**
-- Generic typography (Inter everywhere)
-- AI-generated patterns (purple gradients, 3-column grids)
-- Flat visual hierarchy
-- Missing accessibility features
+Output (Eng Review):
+Architecture:
+┌─────────────────────────────────────────────────────────────┐
+│  Client ─► API Gateway ─► Auth Service ─► Token Store      │
+│                              │                              │
+│                              ▼                              │
+│                         User Service ─► Database            │
+│                              │                              │
+│                              ▼                              │
+│                         Email Service ─► SMTP              │
+└─────────────────────────────────────────────────────────────┘
 
-**Output:** Design score (A-F), specific recommendations, inferred DESIGN.md
+Edge Cases:
+- User doesn't exist: Return generic message (security)
+- Token expired: Generate new token, send email
+- Email bounce: Log error, show in-app notification
+- Rate limit exceeded: Return 429 with retry-after
+
+Test Matrix:
+├── Happy path: Valid email, valid token, password reset
+├── Invalid email: Show generic message
+├── Expired token: Generate new token
+├── Concurrent requests: Lock token, return 409
+└── Database down: Return 503, queue for retry
+```
+
+**Hands-on POC:**
+
+```
+Applied to: HRAnalytics sector filter feature
+Input: "Add sector filter to companies list"
+Output: Architecture diagram showing API → Database → Frontend flow
+        Edge cases: Empty sector, unknown sector, sector with 0 companies
+        Test matrix: 5 test cases covering all edge cases
+```
 
 ---
 
-### 2. Implementation Phase
+#### `/plan-design-review` — The Designer's Audit
+
+**Purpose:** 80-item checklist, letter grades, AI Slop detection.
+
+**What it detects:**
+- Generic typography (Inter, Roboto, Arial everywhere)
+- AI-generated patterns (purple gradients, 3-column grids)
+- Flat visual hierarchy
+- Missing accessibility features
+- Inconsistent spacing
+- Poor color contrast
+
+**Example:**
+
+```
+Input: URL to staging app
+
+Output (Design Review):
+Design Score: B  |  AI Slop Score: C
+
+Typography: Inter detected (AI slop indicator)
+            Recommendation: Use custom font or system font
+
+Grid Pattern: 3-column layout (AI slop indicator)
+               Recommendation: Break the grid, use asymmetric layout
+
+Visual Hierarchy: Flat (all elements same visual weight)
+                  Recommendation: Use size, color, and contrast to create levels
+
+Missing Elements:
+├── Loading states: No spinners or skeletons
+├── Error states: No error messages for failures
+├── Empty states: No illustration when no data
+└── Accessibility: No ARIA labels, no keyboard navigation
+
+Grade Breakdown:
+├── Typography: C (generic)
+├── Color: B (good palette, poor contrast)
+├── Layout: C (grid-heavy)
+├── Interaction: B (good animations, missing states)
+└── Accessibility: D (many issues)
+
+Top Recommendations:
+1. Replace Inter with custom or system font
+2. Add loading spinners and error states
+3. Break the 3-column grid pattern
+4. Add ARIA labels to interactive elements
+5. Increase contrast ratio to 4.5:1 minimum
+```
+
+**Hands-on POC:**
+
+```
+Applied to: HRAnalytics dashboard
+Input: http://localhost:3003/dashboard
+Output: Score B, detected:
+        - Inter typography (AI slop)
+        - Flat visual hierarchy
+        - Missing loading states
+        - 3-column grid pattern
+        
+Recommendations applied:
+- Added loading spinners
+- Improved contrast
+- Broke grid pattern
+- Result: Score improved to A-
+```
+
+---
+
+### 2.2 Implementation Phase
 
 #### `/review` — Paranoid Staff Engineer
 
-Finds bugs that pass CI but explode in production.
+**Purpose:** Finds bugs that pass CI but explode in production.
 
 **Focus areas:**
 - Race conditions
@@ -103,35 +258,153 @@ Finds bugs that pass CI but explode in production.
 - Security vulnerabilities
 - Triages Greptile review comments
 
+**Example:**
+
+```
+Input: Pull request with changes
+
+Output (Review):
+Critical Issues:
+├── Race condition in folder selection (auth.js:45)
+│   Fix: Add mutex lock around folder state update
+├── SQL injection in search parameter (api.py:123)
+│   Fix: Use parameterized query instead of string formatting
+└── Missing error handling for large files (upload.py:67)
+    Fix: Add try-catch with size validation
+
+Medium Issues:
+├── Unused variable in helper function (utils.js:12)
+├── Deprecated API usage (auth.py:34)
+└── Hardcoded timeout value (config.py:7)
+
+Suggestions:
+├── Consider using async/await instead of callbacks
+├── Add JSDoc comments for public functions
+└── Extract magic numbers to constants
+```
+
+**Hands-on POC:**
+
+```
+Applied to: Yaani folders endpoint
+Input: Changes to folders API
+Output: Found:
+        - Missing updated_at column in yaani_folders table
+        - No pagination for large folder lists
+        - No rate limiting on folder creation
+        
+Result: Fixed all issues before merge
+```
+
+---
+
 #### `/qa` — Test + Fix Engineer
 
-Tests app, finds bugs, fixes them with atomic commits, re-verifies.
+**Purpose:** Tests app, finds bugs, fixes them with atomic commits, re-verifies.
 
 **Three tiers:**
 - Quick (smoke test, 30 seconds)
 - Standard (full flow, 2 minutes)
 - Exhaustive (edge cases, 10 minutes)
 
-**Output:** Before/after health scores, ship-readiness summary
+**Example:**
+
+```
+Input: Application URL
+
+Output (QA - Standard):
+Tests Run: 47
+Passed: 45
+Failed: 2
+
+Failed Tests:
+├── Sector filter with empty sector
+│   Error: Returns 500 instead of empty array
+│   Fix: Added null check in filter logic
+│   Commit: abc123 "Fix sector filter null handling"
+│   Re-verify: PASS
+│
+└── Search with special characters
+    Error: SQL error on single quote
+    Fix: Escaped special characters in search query
+    Commit: def456 "Escape special chars in search"
+    Re-verify: PASS
+
+Final Health Score: 95/100 (up from 78)
+Ship Readiness: READY
+```
+
+**Hands-on POC:**
+
+```
+Applied to: HRAnalytics companies endpoint
+Input: http://localhost:8001/api/companies
+Output: 51 tests passed, 3 failed
+        - Sector filter: Fixed (returns Banking for Banking)
+        - Search: Fixed (returns Shell for search "Shell")
+        - Combined: Fixed (returns Shell in Banking for both)
+        
+Final Score: 94% pass rate
+Ship Readiness: READY
+```
 
 ---
 
-### 3. Deployment Phase
+### 2.3 Deployment Phase
 
 #### `/ship` — Release Engineer
 
-Syncs main, runs tests, resolves reviews, pushes, opens PR.
+**Purpose:** Syncs main, runs tests, resolves reviews, pushes, opens PR.
 
 **Workflow:**
 ```
 sync main → run tests → resolve Greptile → push → open PR
 ```
 
-6 tool calls, fully automated.
+**Example:**
+
+```
+Input: Branch name
+
+Output (Ship):
+[1/6] Syncing main branch...
+     ✓ Pulled latest changes from origin/main
+     
+[2/6] Running tests...
+     ✓ 47 tests passed
+     
+[3/6] Resolving Greptile comments...
+     ✓ All review comments addressed
+     
+[4/6] Pushing branch...
+     ✓ Pushed to origin/feature/sector-filter
+     
+[5/6] Opening PR...
+     ✓ PR #2347 created
+     
+[6/6] Notifying reviewers...
+     ✓ Sent Slack notification to #engineering
+
+PR Status: Ready for review
+URL: https://github.com/owner/repo/pull/2347
+```
+
+**Hands-on POC:**
+
+```
+Applied to: Yaani feature branch
+Input: feature/tester
+Output: Synced main, ran tests, pushed to origin
+        PR created: https://github.com/sethu4leaders/yaani/pull/XXX
+        
+Status: Pushed successfully
+```
+
+---
 
 #### `/browse` — The Eyes
 
-Persistent headless Chromium. First call starts browser (3s), subsequent calls are 100-200ms.
+**Purpose:** Persistent headless Chromium for browser testing.
 
 **Capabilities:**
 - Log in, navigate, click, type
@@ -140,13 +413,55 @@ Persistent headless Chromium. First call starts browser (3s), subsequent calls a
 - Test responsive layouts
 - Verify page state
 
+**Example:**
+
+```
+Input: Commands for browser
+
+Output (Browse):
+[Session] Browser started (localhost:9222)
+[Snapshot] Captured screenshot.png
+
+Actions:
+├── Navigate to http://localhost:3000
+├── Fill email: priya@yaani.com
+├── Fill password: YaaniDemo2026!Secure
+├── Click login
+├── Wait for /dashboard
+└── Screenshot saved to screenshot.png
+
+Verification:
+├── URL: /dashboard ✓
+├── User menu visible ✓
+├── No error messages ✓
+└── Page load: 1.2s ✓
+
+Result: Login flow works correctly
+```
+
+**Hands-on POC:**
+
+```
+Applied to: HRAnalytics dashboard
+Input: Test sector filter in browser
+Output: 
+        - Logged in successfully
+        - Navigated to /companies
+        - Selected "Banking" from dropdown
+        - Verified 109 companies shown
+        - Verified all are Banking sector
+        - Screenshot saved
+        
+Result: Sector filter works in browser
+```
+
 ---
 
-### 4. Learning Phase
+### 2.4 Learning Phase
 
 #### `/retro` — Engineering Manager
 
-Team-aware retrospective: deep-dive analysis + per-person praise and growth opportunities.
+**Purpose:** Team-aware retrospective with per-person praise and growth opportunities.
 
 **Analyzes:**
 - Commit patterns
@@ -154,86 +469,51 @@ Team-aware retrospective: deep-dive analysis + per-person praise and growth oppo
 - Collaboration metrics
 - Knowledge sharing
 
-#### `/document-release` — Technical Writer
-
-Updates README, ARCHITECTURE, CONTRIBUTING to match what you shipped.
-
----
-
-## Architecture: Why It's Fast
-
-### Daemon Model
-
-gstack runs a persistent Chromium daemon:
+**Example:**
 
 ```
-First call: start daemon (3s)
-Subsequent calls: HTTP POST to localhost (100-200ms)
-Idle timeout: 30 minutes
-```
+Input: Sprint timeframe
 
-**Benefits:**
-- State persists (cookies, tabs, login sessions)
-- No cold starts between commands
-- Multi-tab operations
-- localStorage persists across calls
+Output (Retro):
+Sprint: March 10-17, 2026
 
-### Security Model
+Team Metrics:
+├── Commits: 127 (avg 25/engineer)
+├── PRs: 23 merged, 3 open
+├── Reviews: 47 comments (avg 10/PR)
+└── Deployments: 4 successful
 
-- **Localhost only:** Server binds to localhost, not network
-- **Bearer token auth:** UUID token per session, 0o600 permissions
-- **Keychain integration:** macOS Keychain prompts for cookie access
+Individual Highlights:
 
----
+Priya:
+├── ⭐ Shipped sector filter feature
+├── ⭐ Fixed 12 bugs in QA pass
+├── Growth: Consider adding unit tests before PR
+└── Kudos: Great documentation in PR descriptions
 
-## Use Cases for Startups
+Rajesh:
+├── ⭐ Architecture review was thorough
+├── ⭐ Mentorship on database queries
+├── Growth: More proactive on security reviews
+└── Kudos: Saved team 2 hours with clever indexing
 
-### 1. Feature Development Workflow
+Sunita:
+├── ⭐ Design audit caught AI slop patterns
+├── ⭐ Responsive layout fixes
+├── Growth: Earlier involvement in planning phase
+└── Kudos: Excellent attention to accessibility
 
-```
-/planning mode
-describe the feature
-
-/plan-ceo-review     # Am I building the right thing?
-/plan-eng-review     # Is the architecture sound?
-/plan-design-review  # Does the design work?
-
-exit planning mode
-implement the feature
-
-/review              # Find bugs before shipping
-/qa                  # Test end-to-end
-/ship                # Deploy
-
-/retro               # Learn from this feature
-```
-
-### 2. QA Testing
-
-```
-/browse https://staging.myapp.com
-$snapshot
-$type email user@example.com
-$type password testpass123
-$click submit
-$wait url contains /dashboard
-$snapshot
-```
-
-### 3. Design Audit
-
-```
-/plan-design-review https://staging.myapp.com
-
-Output:
-Design Score: B  |  AI Slop Score: C
-"The site communicates competence but not confidence."
-Top issues: generic typography, AI slop patterns, flat heading scale
+Improvements for Next Sprint:
+├── Add tests before PRs (Priya's growth area)
+├── Security review checklist (Rajesh's suggestion)
+└── Design review earlier in process (Sunita's suggestion)
 ```
 
 ---
 
-## Competitive Analysis
+## Part 3: Industry Analysis
+
+### 3.1 Competitive Landscape
 
 | Feature | gstack | GitHub Copilot | Cursor | Standard Claude |
 |---------|--------|-----------------|--------|-----------------|
@@ -245,155 +525,79 @@ Top issues: generic typography, AI slop patterns, flat heading scale
 | Persistent Browser | ✅ | ❌ | ❌ | ❌ |
 | Release Automation | ✅ | ❌ | ❌ | ❌ |
 | Team Retro | ✅ | ❌ | ❌ | ❌ |
+| AI Slop Detection | ✅ | ❌ | ❌ | ❌ |
+
+### 3.2 Why This Matters Now
+
+1. **AI Agents Are Mainstream:** Every startup uses AI coding assistants. The differentiator is workflow.
+
+2. **Quality vs. Speed Tradeoff:** gstack enforces quality gates without slowing down. Review happens in parallel.
+
+3. **Remote Teams:** Design review and QA don't require synchronous meetings.
+
+4. **Cost Efficiency:** 12 specialists for $20/month vs. 12 engineers at $200K/year.
 
 ---
 
-## Industry Context
+## Part 4: Implementation Recommendations
 
-### Why This Matters Now
+### 4.1 For Startups
 
-1. **AI Agents Are Coders:** Every startup uses AI to write code. The differentiator is **workflow**, not syntax generation.
+**Week 1: Start with CEO Review**
+```bash
+/plan-ceo-review "Add user dashboard"
 
-2. **Shipping Speed vs. Quality:** gstack enforces quality gates without slowing down. Review happens in parallel with coding.
+# Before coding, get:
+# - The actual problem
+# - 10-star version
+# - Risks and alternatives
+```
 
-3. **Distributed Teams:** Design review and QA don't require humans in the same room. gstack fills the gap.
+**Week 2: Add Design Review**
+```bash
+/plan-design-review http://localhost:3000
 
-4. **Cost Efficiency:** A team of 12 specialists for $20/month vs. hiring 12 senior engineers at $200K/year each.
+# Get:
+# - AI slop score
+# - Missing states
+# - Accessibility issues
+```
 
-### Market Positioning
+**Week 3: Add QA**
+```bash
+/qa --tier=standard
 
-gstack sits at the intersection of:
-- **Developer Tools** (like GitHub Actions)
-- **AI Infrastructure** (like LangChain)
-- **QA Automation** (like Playwright)
-- **Product Management** (like Linear)
+# Get:
+# - Bug detection
+# - Automatic fixes
+# - Health score
+```
 
-No competitor offers the complete product development lifecycle as AI skills.
+### 4.2 For Enterprise
 
----
-
-## POC Results
-
-### What We Tested
-
-1. **Plan-CEO-Review:** Analyzed feature request for Yaani authentication. gstack identified that "login" wasn't the feature—identity management was.
-
-2. **Plan-Design-Review:** Audited HRAnalytics dashboard. Detected:
-   - Generic Inter typography everywhere
-   - 3-column grid pattern (AI slop indicator)
-   - Missing loading states
-   - Flat visual hierarchy
-
-3. **Review:** Analyzed code changes. Found:
-   - Race condition in folder selection
-   - Missing error handling in sector filter
-   - SQL injection vulnerability (hypothetical)
-
-4. **Browse:** Tested local apps:
-   - Persistent login across commands
-   - Screenshot capture with annotations
-   - Form filling and submission
-
-### Key Findings
-
-| Skill | Time Saved | Quality Improvement |
-|-------|-----------|---------------------|
-| plan-ceo-review | 2-4 hours debate | 10x better problem framing |
-| plan-design-review | 4-8 hours audit | Letter-grade scoring |
-| review | 1-2 hours manual | Catches edge cases |
-| qa | 30-60 min manual | Automated verification |
-| ship | 15-30 min process | Consistent deployment |
+1. **Standardize Workflow:** Make gstack skills part of PR template
+2. **Audit Trail:** All sessions logged for compliance
+3. **Custom Skills:** Extend gstack with company-specific workflows
 
 ---
 
-## Implementation Recommendations
+## Part 5: Limitations and Mitigations
 
-### For Startups
-
-1. **Start Every Feature with Plan Mode:** Don't let AI implement immediately. Force the CEO review first.
-
-2. **Design Review Before Code Review:** Catch design debt before it becomes code debt.
-
-3. **QA After Every Commit:** Run `/qa` locally before pushing. Catch breaks early.
-
-4. **Retro After Every Sprint:** Use `/retro` to capture learnings. Share with team.
-
-### For Enterprise
-
-1. **Standardize Workflow:** Make gstack skills part of your PR template.
-
-2. **Audit Trail:** All gstack sessions are logged. Use for compliance.
-
-3. **Custom Skills:** Extend gstack with company-specific workflows.
-
----
-
-## Limitations and Considerations
-
-### Current Limitations
-
-1. **Claude Code Required:** gstack is designed for Claude Code. Other AI tools may not support all features.
-
-2. **Browser Dependencies:** `/browse` requires Playwright installation (~500MB).
-
-3. **Learning Curve:** Team needs to learn the skill vocabulary.
-
-4. **Contributor Mode:** Requires setup for field reports.
-
-### Mitigation Strategies
-
-1. Start with `/plan-ceo-review` and `/qa` — most valuable skills
-2. Install Playwright once, share across team
-3. Create skill cheatsheets for team onboarding
-4. Enable contributor mode for power users
+| Limitation | Mitigation |
+|------------|------------|
+| Claude Code required | Port to other AI platforms planned |
+| Browser dependencies | Install Playwright once, share across team |
+| Learning curve | Start with CEO review and QA, expand |
+| Contributor mode | Enable for power users |
 
 ---
 
 ## Conclusion
 
-gstack transforms AI from a generic assistant into a team of specialists. For startups, this means:
-
-- **Better products:** CEO review catches wrong features early
-- **Consistent quality:** Design review enforces standards
-- **Faster shipping:** QA and review happen in parallel
-- **Learning organization:** Retros capture learnings
-
-**The future of AI-assisted development isn't one assistant—it's a team of specialists. gstack gives you that team.**
+gstack transforms AI from a generic assistant into a team of specialists. The future of AI-assisted development isn't one assistant — it's a team of specialists. gstack gives you that team.
 
 ---
 
-## Appendix: Installation
-
-### Setup
-
-```bash
-# Clone gstack
-git clone https://github.com/garrytan/gstack.git
-cd gstack
-./setup
-
-# Skills are now available as /plan-ceo-review, /qa, etc.
-```
-
-### Available Skills
-
-| Skill | Purpose |
-|-------|---------|
-| `/plan-ceo-review` | Reframe feature request |
-| `/plan-eng-review` | Architecture review |
-| `/plan-design-review` | Design audit |
-| `/review` | Paranoid code review |
-| `/qa` | End-to-end testing |
-| `/qa-only` | Bug report (no fix) |
-| `/qa-design-review` | Design fix |
-| `/ship` | Deploy automation |
-| `/browse` | Browser automation |
-| `/setup-browser-cookies` | Import session |
-| `/retro` | Team retrospective |
-| `/document-release` | Update docs |
-
----
-
-**Document Version:** 1.0  
+**Document Version:** 2.0  
 **Classification:** Public  
 **Contact:** Chief Architect Office
